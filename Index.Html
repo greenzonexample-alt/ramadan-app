@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramadan Live Widget</title>
+
+<style>
+body {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:#222;
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.widget {
+    background:#fffaf0;
+    width:290px;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    border:3px solid #b88746;
+}
+
+.header {
+    background:linear-gradient(to bottom,#0f5c2e,#0d4722);
+    color:#f7d070;
+    text-align:center;
+    padding:15px;
+}
+
+.ramadan-day {
+    font-size:1em;
+    font-weight:bold;
+}
+
+.date-container {
+    text-align:center;
+    padding:10px;
+    color:#0d4722;
+}
+
+.big-date {
+    font-size:2.8em;
+    font-weight:bold;
+}
+
+.month-year {
+    font-size:0.9em;
+    font-weight:bold;
+    color:#b88746;
+}
+
+.live-clock-container {
+    background:#0a381a;
+    margin:10px 20px;
+    padding:8px;
+    border-radius:8px;
+    text-align:center;
+    border:2px solid #b88746;
+}
+
+.live-clock {
+    font-size:1.4em;
+    color:#00ffcc;
+    font-weight:bold;
+}
+
+.timings-container {
+    display:flex;
+    justify-content:space-between;
+    margin:10px;
+    background:#fcf9f2;
+    border:2px solid #e0d5b5;
+    border-radius:12px;
+    padding:10px;
+}
+
+.time-box {
+    text-align:center;
+    flex:1;
+}
+
+.time-label {
+    font-size:1.1em;
+    font-weight:bold;
+    color:#0d4722;
+}
+
+.time-value {
+    font-size:1.4em;
+    font-weight:bold;
+    color:#c0392b;
+}
+
+.footer {
+    background:#0a381a;
+    color:white;
+    text-align:center;
+    padding:12px;
+}
+
+.designer-name {
+    color:#f7d070;
+    font-weight:bold;
+}
+
+.phone {
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="widget">
+
+<div class="header">
+☪️ <span id="ramzanDay">Ramadan Mubarak</span>
+</div>
+
+<div class="date-container">
+<div class="big-date" id="dateNumber">--</div>
+<div class="month-year" id="monthYearText">--</div>
+</div>
+
+<div class="live-clock-container">
+<div class="live-clock" id="liveTime">--:--:--</div>
+</div>
+
+<div class="timings-container">
+<div class="time-box">
+<div class="time-label">Sahar</div>
+<div class="time-value" id="saharTime">--:--</div>
+</div>
+
+<div class="time-box">
+<div class="time-label">Iftar</div>
+<div class="time-value" id="iftarTime">--:--</div>
+</div>
+</div>
+
+<div class="footer">
+<div class="designer-name">Azher Designer</div>
+<div>Madina Nagar Rly. Station MUDKHED</div>
+<div class="phone">📞 9975933910</div>
+</div>
+
+</div>
+
+<script>
+const ramadanData={
+"02-19":{day:1,sahar:"5:26",iftar:"6:28"},
+"02-20":{day:2,sahar:"5:24",iftar:"6:28"},
+"02-21":{day:3,sahar:"5:24",iftar:"6:29"},
+"02-22":{day:4,sahar:"5:24",iftar:"6:29"},
+"02-23":{day:5,sahar:"5:23",iftar:"6:30"},
+"02-24":{day:6,sahar:"5:23",iftar:"6:30"},
+"02-25":{day:7,sahar:"5:21",iftar:"6:30"},
+"02-26":{day:8,sahar:"5:21",iftar:"6:30"},
+"02-27":{day:9,sahar:"5:20",iftar:"6:30"},
+"02-28":{day:10,sahar:"5:20",iftar:"6:31"},
+"03-01":{day:11,sahar:"5:19",iftar:"6:31"},
+"03-02":{day:12,sahar:"5:16",iftar:"6:32"},
+"03-03":{day:13,sahar:"5:16",iftar:"6:32"},
+"03-04":{day:14,sahar:"5:15",iftar:"6:33"},
+"03-05":{day:15,sahar:"5:15",iftar:"6:34"},
+"03-06":{day:16,sahar:"5:14",iftar:"6:33"},
+"03-07":{day:17,sahar:"5:13",iftar:"6:34"},
+"03-08":{day:18,sahar:"5:13",iftar:"6:34"},
+"03-09":{day:19,sahar:"5:12",iftar:"6:34"},
+"03-10":{day:20,sahar:"5:11",iftar:"6:34"},
+"03-11":{day:21,sahar:"5:10",iftar:"6:34"},
+"03-12":{day:22,sahar:"5:10",iftar:"6:35"},
+"03-13":{day:23,sahar:"5:09",iftar:"6:35"},
+"03-14":{day:24,sahar:"5:08",iftar:"6:35"},
+"03-15":{day:25,sahar:"5:07",iftar:"6:35"},
+"03-16":{day:26,sahar:"5:07",iftar:"6:36"},
+"03-17":{day:27,sahar:"5:06",iftar:"6:36"},
+"03-18":{day:28,sahar:"5:05",iftar:"6:36"},
+"03-19":{day:29,sahar:"5:05",iftar:"6:36"},
+"03-20":{day:30,sahar:"5:04",iftar:"6:37"}
+};
+
+function updateClock(){
+const now=new Date();
+let h=now.getHours();
+let m=String(now.getMinutes()).padStart(2,'0');
+let s=String(now.getSeconds()).padStart(2,'0');
+let ampm=h>=12?'PM':'AM';
+h=h%12||12;
+document.getElementById('liveTime').innerHTML=`${h}:${m}:${s} ${ampm}`;
+}
+
+function updateData(){
+const today=new Date();
+const month=String(today.getMonth()+1).padStart(2,'0');
+const dateNum=String(today.getDate()).padStart(2,'0');
+const key=`${month}-${dateNum}`;
+
+document.getElementById('dateNumber').innerText=today.getDate();
+document.getElementById('monthYearText').innerText=
+today.toLocaleDateString('en-US',{month:'long',year:'numeric',weekday:'long'});
+
+if(ramadanData[key]){
+document.getElementById('ramzanDay').innerText=`ROZA NO - ${ramadanData[key].day}`;
+document.getElementById('saharTime').innerText=ramadanData[key].sahar;
+document.getElementById('iftarTime').innerText=ramadanData[key].iftar;
+}
+}
+
+updateClock();
+updateData();
+setInterval(updateClock,1000);
+setInterval(updateData,60000);
+</script>
+
+</body>
+</html>
